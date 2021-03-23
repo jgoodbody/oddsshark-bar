@@ -28,11 +28,14 @@ for league, active in lg_tks['UFC'].json()['leagues'].items():
             }
         ).json()['matchups']
 
+
 def simple_odds(odds):
     for game in odds:
         if game["type"] == "matchup":
-            print('--',game['away_short_name'],game['away_odds'], game['status'])
-            print('--',game['home_short_name'],game['home_odds'])        
+            print('--', game['status'], '| font=Courier')
+            print('--', game['away_short_name'], game['away_odds'] if game['away_odds'].startswith('-') else '+' + game['away_odds'], '| font=Courier')
+            print('--', game['home_short_name'], game['home_odds'] if game['home_odds'].startswith('-') else '+' + game['home_odds'], '| font=Courier')        
+
 
 print('OddsShark Bar')
 print('---')

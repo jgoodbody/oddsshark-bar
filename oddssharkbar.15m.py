@@ -1,15 +1,22 @@
-#!/usr/bin/python3
+#!/Library/Frameworks/Python.framework/Versions/3.8/bin/python3
 
-# <bitbar.title>OddsShark BitBar</bitbar.title>
-# <bitbar.version>v0.1</bitbar.version>
-# <bitbar.author>Joel Goodbody</bitbar.author>
-# <bitbar.author.github>jgoodbody</bitbar.author.github>
-# <bitbar.desc>Displays OddsShark Info</bitbar.desc>
-# <bitbar.image>https://www.bigonsports.com/wp-content/uploads/2016/10/sports-betting-odds-explained.jpg</bitbar.image>
-# <bitbar.dependencies>python</bitbar.dependencies>
-# <bitbar.abouturl>https://github.com/jgoodbody/oddsshark-bar</bitbar.abouturl>
+# <xbar.title>OddsShark BitBar</xbar.title>
+# <xbar.version>v0.1</xbar.version>
+# <xbar.author>Joel Goodbody</xbar.author>
+# <xbar.author.github>jgoodbody</xbar.author.github>
+# <xbar.desc>Displays OddsShark Info</xbar.desc>
+# <xbar.image>https://www.bigonsports.com/wp-content/uploads/2016/10/sports-betting-odds-explained.jpg</xbar.image>
+# <xbar.dependencies>python</xbar.dependencies>
+# <xbar.abouturl>https://github.com/jgoodbody/oddsshark-bar</xbar.abouturl>
 
 # <xbar.var>select(VAR_FUTUREODDS="Bovada"): How to sort future odds? [Team, Opening, Bovada, BetOnline, SportsBetting]</xbar.var>
+# <xbar.var>boolean(VAR_NFL=true): NFL odds?</xbar.var>
+# <xbar.var>boolean(VAR_MLB=true): MLB odds?</xbar.var>
+# <xbar.var>boolean(VAR_NBA=true): NBA odds?</xbar.var>
+# <xbar.var>boolean(VAR_NHL=true): NHL odds?</xbar.var>
+# <xbar.var>boolean(VAR_UFC=true): UFC odds?</xbar.var>
+# <xbar.var>boolean(VAR_NCAAF=true): College Football odds?</xbar.var>
+# <xbar.var>boolean(VAR_NCAAB=true): College Basketball odds?</xbar.var>
 
 import os
 import requests
@@ -29,14 +36,15 @@ lgs['UFC']['odds'] = requests.get(
 )
 
 for league, active in lgs['UFC']['odds'].json()['leagues'].items():
-    lgs[league.upper()]['futures'] = BeautifulSoup(requests.get(f"{site}/{league}/odds/futures").content, 'html.parser')
-    if active==True:
-        lgs[league.upper()]['odds'] = requests.get(
-            'https://io.oddsshark.com/ticker/' + league, 
-            headers = {
-                'referer': site
-            }
-        ).json()['matchups']
+    if os.environ.get('VAR_'+league.upper()) == 'true':
+        lgs[league.upper()]['futures'] = BeautifulSoup(requests.get(f"{site}/{league}/odds/futures").content, 'html.parser')
+        if active==True:
+            lgs[league.upper()]['odds'] = requests.get(
+                'https://io.oddsshark.com/ticker/' + league, 
+                headers = {
+                    'referer': site
+                }
+            ).json()['matchups']
 
 
 class Future_Odds:
@@ -62,7 +70,7 @@ def sorting_provider(x, provider):
 def simple_odds(odds):
     for game in odds:
         if game['type'] == 'date':
-            print('--', game['date']['fullday'], game['date']['month'], game['date']['day'])
+            print('--', game['date']['fullday'], game['date']['month'], game['date']['day'], font)
         if game["type"] == "matchup":
             if 'matchup_link' in game:
                 print('----', game['status'], font, '| href=' + site + game['matchup_link'])
@@ -77,19 +85,19 @@ def simple_odds(odds):
 
 
 def ufc_odds(odds):
-    print('UFC')
+    print('UFC', font)
     for fight in odds:
         if fight['type'] == 'event':
-            print('--', fight['event'])
+            print('--', fight['event'], font)
         if fight["type"] == 'matchup':
             if not fight['status']:
-                print('----', fight['event_date'][11:])
-                print('----', fight['away_name'], fight['away_odds'] if fight['away_odds'].startswith('-') else '+' + fight['away_odds'], '| font=Courier')
-                print('----', fight['home_name'], fight['home_odds'] if fight['home_odds'].startswith('-') else '+' + fight['home_odds'], '| font=Courier')
+                print('----', fight['event_date'][11:], font)
+                print('----', fight['away_name'], fight['away_odds'] if fight['away_odds'].startswith('-') else '+' + fight['away_odds'], font)
+                print('----', fight['home_name'], fight['home_odds'] if fight['home_odds'].startswith('-') else '+' + fight['home_odds'], font)
             else:
-                print('----', 'FINAL')
-                print('----', fight['away_name'], fight['status'] if fight['away_name'] == fight['winner'] else '', '| font=Courier')
-                print('----', fight['home_name'], fight['status'] if fight['home_name'] == fight['winner'] else '', '| font=Courier')
+                print('----', 'FINAL', font)
+                print('----', fight['away_name'], fight['status'] if fight['away_name'] == fight['winner'] else '', font)
+                print('----', fight['home_name'], fight['status'] if fight['home_name'] == fight['winner'] else '', font)
 
 
 def process_odds_section(soup, html_type, html_class):
@@ -128,10 +136,10 @@ def create_futures_data(teams, opening, currents):
 def print_all_odds(lgs):
     for sport in lgs:
         if sport not in ['UFC','SOCCER']:
-            print(sport)
+            print(sport, font)
             if 'odds' in lgs[sport]:
                 simple_odds(lgs[sport]['odds'])
-            print('-- Futures')
+            print('-- Futures', font)
         elif sport == 'UFC':
             ufc_odds(lgs[sport]['odds'])
         opening_odds = process_odds_section(lgs[sport]['futures'], 'div', ['op-item op-future-item', 'op-item op-future-item '])
@@ -156,6 +164,6 @@ def print_all_odds(lgs):
                     print('------ {0:<21}{1:>8}{2:>8}{3:>14}{4:>15}{5}'.format(odds.team, odds.opening, odds.bovada, odds.betonline, odds.sportsbetting, font))
 
 
-print('OddsShark Bar')
+print('OddsShark Bar', font)
 print('---')
 print_all_odds(lgs)

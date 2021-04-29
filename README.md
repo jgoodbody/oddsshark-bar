@@ -16,6 +16,7 @@ All via OddsShark:
 * Bovada
 * BetOnline.AG
 * Sports Betting
+
 Also can sort by team and opening odds if you wish.
 
 ### Examples:

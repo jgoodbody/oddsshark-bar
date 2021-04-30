@@ -1,7 +1,7 @@
-#!/Library/Frameworks/Python.framework/Versions/3.8/bin/python3
+#!/usr/bin/python3
 
-# <xbar.title>OddsShark BitBar</xbar.title>
-# <xbar.version>v0.1</xbar.version>
+# <xbar.title>OddsShark Bar</xbar.title>
+# <xbar.version>v1.0</xbar.version>
 # <xbar.author>Joel Goodbody</xbar.author>
 # <xbar.author.github>jgoodbody</xbar.author.github>
 # <xbar.desc>Displays OddsShark Info</xbar.desc>

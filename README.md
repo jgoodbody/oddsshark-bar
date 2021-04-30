@@ -1,5 +1,5 @@
 # oddsshark-bar
-## An xbar (previously BitBar) plugin for keeping track of some sports odds from oddsshark.com
+## An xbar (previously BitBar) plugin for some sports odds on oddsshark.com
 
 [Link to xbar](https://github.com/matryer/xbar)
 
